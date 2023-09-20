@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	fiberSwagger "github.com/swaggo/fiber-swagger"
-	//swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/test-fiber/database"
 	"github.com/test-fiber/routes"
@@ -11,22 +10,23 @@ import (
 )
 
 func welcome(c *fiber.Ctx) error {
-	return c.SendString("Welcom to my awesome API")
+	return c.SendString("Welcome to my awesome API")
 }
 
 
-func setupRoutes(app *fiber.App) {
-	
-	//app.Use(swagger.New(cfg))
+func SetupRoutes() *fiber.App{
+	app:= fiber.New()
 	app.Get("/swagger/*",fiberSwagger.WrapHandler)
-	//app.Get("/swagger/*",fiberSwagger.ConfigDefault(swagger.HandlerDefault))
 
-	app.Get("/api",welcome)
+	app.Get("/",welcome)
 	app.Post("/api/user/signin",routes.CreateUser)
 	app.Get("/api/users",routes.GetUsers)
 	app.Get("/api/user/:id",routes.GetUser)
 	app.Put("/api/user/update/:id",routes.UpdateUser)
 	app.Delete("/api/user/unsubscribe/:id",routes.DeleteUser)
+
+	log.Fatal(app.Listen(":3000"))
+	return app
 }
 
 
@@ -46,12 +46,7 @@ func setupRoutes(app *fiber.App) {
 // @BasePath /
 // @schemes http
 func main() {
-	database.ConnectDB()
-	app:= fiber.New()
-	setupRoutes(app)
-
-	app.Get("/api",welcome)
-
-	log.Fatal(app.Listen(":3000"))
+	database.ConnectDB()	
+	SetupRoutes()
 }
 
